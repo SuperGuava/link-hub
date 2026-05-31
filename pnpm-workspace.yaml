@@ -1,0 +1,19 @@
+allowBuilds:
+  "@prisma/client": false
+  better-sqlite3: false
+  esbuild: true
+  msw: true
+  sharp: true
+  unrs-resolver: true
+
+# better-auth@1.6.12 kysely-adapter is incompatible with kysely 0.29.x (Turbopack build)
+# https://github.com/better-auth/better-auth/issues/9810
+overrides:
+  kysely: "0.28.9"
+  better-call: "1.3.5"
+
+# Bundlers (Turbopack) must resolve a single better-call@1.3.5 (not stale 1.1.8)
+publicHoistPattern:
+  - "better-call"
+  - "better-auth"
+  - "@better-auth/*"
