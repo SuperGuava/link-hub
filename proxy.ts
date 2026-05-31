@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const SESSION_COOKIE = "better-auth.session_token";
+/** Better Auth session cookie (dev + production secure prefix + chunked names). */
+function hasSessionCookie(request: NextRequest): boolean {
+  return request.cookies.getAll().some((cookie) => {
+    const baseName = cookie.name.replace(/^__(Secure|Host)-/, "");
+    return (
+      Boolean(cookie.value) &&
+      (baseName === "better-auth.session_token" ||
+        baseName.startsWith("better-auth.session_token."))
+    );
+  });
+}
 
 export function proxy(request: NextRequest) {
-  const sessionCookie = request.cookies.get(SESSION_COOKIE);
-
-  if (!sessionCookie?.value) {
+  if (!hasSessionCookie(request)) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set(
       "callbackUrl",
